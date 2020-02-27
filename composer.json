@@ -1,0 +1,20 @@
+{
+  "name": "1kmenu/mail",
+  "description": "Adapter for PHPMailer",
+  "type": "library",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Dmitriy Lukin",
+      "email": "lukin.d87@gmail.com"
+    }
+  ],
+  "minimum-stability": "dev",
+  "require": {
+  },
+  "autoload": {
+    "psr-4": {
+      "XrTools\\": "src"
+    }
+  }
+}
