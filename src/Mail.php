@@ -131,6 +131,12 @@ class Mail
 				$mail->AltBody = $sys['alt_body'];
 			}
 
+			if(!empty($sys['img_attachments']) && is_array($sys['img_attachments'])){
+				foreach($sys['img_attachments'] as $cid => $filePath){
+					$mail->addEmbeddedImage($filePath, $cid, $cid.'.'.pathinfo($filePath, PATHINFO_EXTENSION));
+				}
+			}
+
 			// Use SMTP
 			$mail->IsSMTP();
 
