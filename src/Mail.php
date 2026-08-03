@@ -87,7 +87,7 @@ class Mail
 			$sys['from_mail'] = $this->config['from_mail_default'] ?? 'noreply@localhost';
 		}
 		if(empty($sys['reply_to'])){
-			$sys['reply_to'] = $sys['from_mail'];
+			$sys['reply_to'] = $this->config['reply_to_default'] ?? $sys['from_mail'];
 		}
 		if(empty($sys['return_path'])){
 			$sys['return_path'] = $sys['from_mail'];
