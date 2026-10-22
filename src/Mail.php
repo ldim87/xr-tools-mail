@@ -7,7 +7,8 @@
 
 namespace XrTools;
 
-use \PHPMailer;
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\SMTP;
 
 class Mail
 {
@@ -100,17 +101,16 @@ class Mail
 		}
 
 		try {
-			$mail = new PHPMailer;
+			$mail = new PHPMailer(true);
 
-			$mail->CharSet = 'UTF-8';
-			$mail->From = $sys['from_mail'];
-			$mail->addReplyTo($sys['reply_to']);
+			$mail->CharSet = PHPMailer::CHARSET_UTF8;
 
-			// bounce
-			$mail->ReturnPath = $sys['return_path'];
+			$mail->setFrom($sys['from_mail'], $sys['from_name']);
+			$mail->addReplyTo($sys['reply_to'], $sys['from_name']);
+
+			// bounce (Sender is used for the Return-Path / MAIL FROM)
 			$mail->Sender = $sys['sender'];
 
-			$mail->FromName = $sys['from_name'];
 			$mail->addAddress($to);
 
 			if($sys['html']){
@@ -138,7 +138,7 @@ class Mail
 			}
 
 			// Use SMTP
-			$mail->IsSMTP();
+			$mail->isSMTP();
 
 			$mail->Host = $this->config['smtp_host'] ?? 'localhost';
 
@@ -151,7 +151,7 @@ class Mail
 				$mail->Port = $this->config['smtp_port'] ?? 587;
 
 				// force TLS
-				$mail->SMTPSecure = 'tls';
+				$mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
 				$mail->SMTPAutoTLS = true;
 
 			} else {
@@ -166,7 +166,7 @@ class Mail
 
 			// enables SMTP debug information (for testing)
 			if($debug){
-				$mail->SMTPDebug = 2;
+				$mail->SMTPDebug = SMTP::DEBUG_SERVER;
 			}
 
 			if($mail->send()){
@@ -186,9 +186,13 @@ class Mail
 				}
 			}
 		}
-		catch(\Exception $e){
+		catch(\Throwable $e){
 			$status = false;
 			$message = 'PHPMailer error: ' . $e->getMessage();
+
+			if($debug){
+				$this->dbg->log('Error: ' . $message, __METHOD__);
+			}
 		}
 
 		return !empty($sys['err_info']) ? ['status' => $status, 'message' => $message] : $status;
